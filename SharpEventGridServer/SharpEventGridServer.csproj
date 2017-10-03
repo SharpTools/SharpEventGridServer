@@ -4,6 +4,12 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Version>0.1.0-beta</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>Andre Carlucci</Authors>
+    <Company>Andre Carlucci</Company>
+    <Description>Simple library to receive Events from Azure EventGrid on a asp.net application.</Description>
+    <RepositoryUrl>https://github.com/SharpTools/SharpEventGridServer</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/SharpTools/SharpEventGridServer</PackageProjectUrl>
+    <PackageTags>azure eventgrid events reactive microservices</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
