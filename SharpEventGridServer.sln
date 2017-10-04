@@ -5,7 +5,12 @@ VisualStudioVersion = 15.0.26923.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpEventGridServer", "SharpEventGridServer\SharpEventGridServer.csproj", "{AE0D64BC-F59D-42F4-8533-F7724F1410BB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpEventGridServerSample", "SharpEventGridServerSample\SharpEventGridServerSample.csproj", "{97BC76E8-A746-4F28-BC38-701648ED78EC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpEventGridServerSample", "SharpEventGridServerSample\SharpEventGridServerSample.csproj", "{97BC76E8-A746-4F28-BC38-701648ED78EC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{46039ACF-771C-4F4B-B8C0-F93495872CAE}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
