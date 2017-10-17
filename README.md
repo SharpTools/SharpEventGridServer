@@ -23,6 +23,11 @@ var opt = new EventGridOptions();
 //to prove that you own the subscriber
 opt.AutoValidateSubscription = true;
 
+//Callback for Azure Event Grid validation attempts (debugging)
+opt.AutoValidateSubscriptionAttemptNotifier = (url, success, message) => {
+    Debug.WriteLine($"Validation attempt: {url} -> Success: {success}: {message}");
+};
+
 //Path to receive your events
 opt.EventsPath = "api/events";
 

@@ -7,6 +7,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Text;
 using System;
+using Microsoft.AspNetCore.Http.Extensions;
 
 namespace SharpEventGridServer {
     public class EventGridMiddleware {
@@ -28,7 +29,7 @@ namespace SharpEventGridServer {
                 await _next(context);
                 return;
             }
-            if(! await ValidateKey(context)) {
+            if (!await ValidateKey(context)) {
                 return;
             }
             await ProcessEvents(context);
@@ -37,7 +38,7 @@ namespace SharpEventGridServer {
 
         private async Task<bool> ValidateKey(HttpContext context) {
             var key = _options.ValidationKey;
-            if(String.IsNullOrEmpty(key)) {
+            if (String.IsNullOrEmpty(key)) {
                 return true;
             }
             var value = _options.ValidationValue;
@@ -47,13 +48,19 @@ namespace SharpEventGridServer {
             }
             context.Response.StatusCode = StatusCodes.Status401Unauthorized;
             await context.Response.WriteAsync("Invalid Key");
+            NotifyAutoValidationAttempt(context, false, "Invalid Key");
             return false;
+        }
+
+        private void NotifyAutoValidationAttempt(HttpContext context, bool success, string message) {
+            var url = UriHelper.GetDisplayUrl(context.Request);
+            _options.AutoValidateSubscriptionAttemptNotifier?.Invoke(url, success, message);
         }
 
         private async Task ProcessEvents(HttpContext context) {
             var events = await ReadContentBody(context.Request);
             foreach (var item in events) {
-                if(item.EventType == EventTypes.SubscriptionValidationEvent && _options.AutoValidateSubscription) {
+                if (item.EventType == EventTypes.SubscriptionValidationEvent && _options.AutoValidateSubscription) {
                     ValidateSubscription(context, item);
                     return;
                 }
@@ -64,16 +71,22 @@ namespace SharpEventGridServer {
         }
 
         private void ValidateSubscription(HttpContext context, Event item) {
-            var validationEvent = item.DeserializeEvent<ValidationEvent>();
+            try {
+                var validationEvent = item.DeserializeEvent<ValidationEvent>();
 
-            var validationResponse = new ValidationEventResponse {
-                ValidationResponse = validationEvent.ValidationCode
-            };
+                var validationResponse = new ValidationEventResponse {
+                    ValidationResponse = validationEvent.ValidationCode
+                };
 
-            context.Response.ContentType = "application/json";
-            context.Response.StatusCode = StatusCodes.Status200OK;
-            var json = JsonConvert.SerializeObject(validationResponse);
-            context.Response.WriteAsync(json);
+                context.Response.ContentType = "application/json";
+                context.Response.StatusCode = StatusCodes.Status200OK;
+                var json = JsonConvert.SerializeObject(validationResponse);
+                context.Response.WriteAsync(json);
+                NotifyAutoValidationAttempt(context, true, "OK");
+            }
+            catch (Exception ex) {
+                NotifyAutoValidationAttempt(context, false, ex.Message);
+            }
         }
 
         private async Task<List<Event>> ReadContentBody(HttpRequest request) {

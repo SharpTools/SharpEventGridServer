@@ -10,8 +10,10 @@ namespace SharpEventGridServer {
 
         public string EventsPath { get; set; } = "api/events";
         public bool AutoValidateSubscription { get; set; } = true;
+        public Action ValidateSubscriptionCallBack { get; set; }
         public string ValidationKey { get; set; }
         public string ValidationValue { get; set; }
+        public Action<string, bool, string> AutoValidateSubscriptionAttemptNotifier { get; set; }
 
         public void MapEvent<T>(string eventType) where T : IEventGridHandler {
             _handlers.Add(eventType.ToLower(), typeof(T));

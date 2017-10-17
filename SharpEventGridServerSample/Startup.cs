@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SharpEventGridServer;
+using System.Diagnostics;
 using System.Net.Http;
 
 namespace SharpEventGridServerSample {
@@ -26,6 +27,9 @@ namespace SharpEventGridServerSample {
             }
             var opt = new EventGridOptions();
             opt.AutoValidateSubscription = true;
+            opt.AutoValidateSubscriptionAttemptNotifier = (url, success, message) => {
+                Debug.WriteLine($"Validation attempt: {url} -> Success: {success}: {message}");
+            };
             opt.EventsPath = "api/events";
             opt.MapEvent<SomeEventHandler>("someEventType");
             opt.MapEvent<NewCustomerEventHandler>("newCustomerEventType");
