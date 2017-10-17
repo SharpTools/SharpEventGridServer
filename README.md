@@ -54,7 +54,7 @@ And that's it: configure Azure EventGrid to send events to https://[yourserver]/
 
 Every EventGrid event handler has to implement the `IEventGridHandler` interface.
 Ex:
-```
+```cs
 public class SomeEventHandler : IEventGridHandler {
     public async Task ProcessEvent(Event eventItem) {
         //do something
@@ -69,7 +69,7 @@ When mapping event handlers, **SharpEventGridServer** will call the default serv
 to instanciate the required object.
 
 Ex: **Startup.cs**
-```
+```cs
 public void ConfigureServices(IServiceCollection services) {
     services.AddSingleton<NewCustomerEventHandler>();
     services.AddSingleton<IDatabase, Database>();
@@ -78,7 +78,7 @@ public void ConfigureServices(IServiceCollection services) {
 ```
 
 **NewCustomerEventHandler.cs**
-```
+```cs
 public class NewCustomerEventHandler : IEventGridHandler {
 	private IDatabase _database;
 	public NewCustomerEventHandler(IDatabase database) {
@@ -88,7 +88,6 @@ public class NewCustomerEventHandler : IEventGridHandler {
 	public async Task ProcessEvent(Event eventItem) {
 		var newCustomerEvent = eventItem.DeserializeEvent<NewCustomerEvent>();
 		await _database.SaveAsync(newCustomerEvent);
-		Debug.WriteLine($"{nameof(NewCustomerEventHandler)} {eventItem.EventType}");
 	}
 }
 ```
